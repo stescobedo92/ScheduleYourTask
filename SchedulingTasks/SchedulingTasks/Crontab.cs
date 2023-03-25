@@ -1,5 +1,6 @@
 ﻿namespace SchedulingTasks;
-public class Class1
+
+public static class Crontab
 {
 
 }
