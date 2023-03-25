@@ -10,6 +10,14 @@
     <Company>Code-Maze</Company> 
     <PackageTags>External Libraries,Temperature,Converter</PackageTags> 
     <Description>This package will help create, get and edit tasks in your system's crontab.</Description>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <Copyright>Copyright © Sergio Triana Escobedo 2023</Copyright>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE.md" Pack="true" PackagePath="LICENSE.md" />
+    <None Include="binary-coffee.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
 </Project>
