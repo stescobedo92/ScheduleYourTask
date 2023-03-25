@@ -1,17 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net7.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net6.0;net7.0;net8.0;netstandard2.1</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	<LangVersion>latest</LangVersion>
     <PackageId>BinaryCoffee.SchedulingTask</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.0.3</Version>
     <Authors>Sergio Triana Escobedo</Authors>
     <Company>Binary Coffee</Company> 
     <PackageTags>External, Libraries</PackageTags> 
     <Description>This package will help create, get and edit tasks in your system's crontab.</Description>
     <NeutralLanguage>en-US</NeutralLanguage>
     <Copyright>Copyright © Sergio Triana Escobedo 2023</Copyright>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageIcon>binarycoffee.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryType>https://github.com/stescobedo92/ScheduleYourTask</RepositoryType>
+    <PackageReleaseNotes>Added icon, external libraries, and update references</PackageReleaseNotes>
+    <RepositoryUrl>https://github.com/stescobedo92/ScheduleYourTask</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/stescobedo92/ScheduleYourTask</PackageProjectUrl>
+    <Title>BinaryCoffee.SchedulingTask</Title>
   </PropertyGroup>
 
   <ItemGroup>
