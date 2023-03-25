@@ -28,5 +28,26 @@ public static class Crontab
 
         return result;
     }
+
+    /// <summary>
+    /// Code to open the crontab editor and allow adding new tasks
+    /// </summary>
+    public static void EditCrontab()
+    {
+        var processStartInfo = new ProcessStartInfo
+        {
+            FileName = "/bin/bash",
+            Arguments = "-c \"crontab -e\"",
+            UseShellExecute = false
+        };
+
+        var process = new Process
+        {
+            StartInfo = processStartInfo
+        };
+
+        process.Start();
+        process.WaitForExit();
+    }
 }
 
