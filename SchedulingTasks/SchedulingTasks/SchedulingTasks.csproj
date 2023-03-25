@@ -4,6 +4,11 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PackageId>BinaryCoffee.SchedulingTask</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>stescobedo</Authors>
+    <Product>External Libraries</Product>
+    <GenerateAppxPackageOnBuild>true</GenerateAppxPackageOnBuild>
   </PropertyGroup>
 
 </Project>
