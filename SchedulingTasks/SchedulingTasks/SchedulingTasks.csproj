@@ -7,8 +7,9 @@
     <PackageId>BinaryCoffee.SchedulingTask</PackageId>
     <Version>1.0.0</Version>
     <Authors>stescobedo</Authors>
-    <Product>External Libraries</Product>
-    <GenerateAppxPackageOnBuild>true</GenerateAppxPackageOnBuild>
+    <Company>Code-Maze</Company> 
+    <PackageTags>External Libraries,Temperature,Converter</PackageTags> 
+    <Description>This package will help create, get and edit tasks in your system's crontab.</Description>
   </PropertyGroup>
 
 </Project>
