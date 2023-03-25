@@ -1,4 +1,4 @@
-<h1><img src="https://github.com/stescobedo92/ScheduleYourTask/blob/main/SchedulingTasks/SchedulingTasks/binary-coffee.png"> BinaryCoffee.ScheduleYourTask </h1>
+<h1><img src="https://github.com/stescobedo92/ScheduleYourTask/blob/main/binarycoffee.png"> BinaryCoffee.ScheduleYourTask </h1>
 
 Crontab is a task scheduling tool on Unix and Linux operating systems that allows for programming the execution of commands at specific times, either repeatedly or at a one-time occurrence.
 
