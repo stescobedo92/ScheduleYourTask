@@ -3,6 +3,13 @@
 public class CrontabTests
 {
     [Test]
+    public void GetCrontab_ReturnsEmptyString()
+    {
+        string crontab = Crontab.GetCrontab();
+        Assert.That(crontab, Is.Empty);
+    }
+
+    [Test]
     public void GetCrontab_ReturnsNonEmptyString()
     {
         string crontab = Crontab.GetCrontab();
