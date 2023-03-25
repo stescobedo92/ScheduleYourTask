@@ -30,7 +30,7 @@ public static class Crontab
     }
 
     /// <summary>
-    /// Code to open the crontab editor and allow adding new tasks
+    /// Code to open the crontab editor and allow editing tasks
     /// </summary>
     public static void EditCrontab()
     {
@@ -38,6 +38,27 @@ public static class Crontab
         {
             FileName = "/bin/bash",
             Arguments = "-c \"crontab -e\"",
+            UseShellExecute = false
+        };
+
+        var process = new Process
+        {
+            StartInfo = processStartInfo
+        };
+
+        process.Start();
+        process.WaitForExit();
+    }
+
+    /// <summary>
+    /// Code to open the crontab editor and allow adding new tasks
+    /// </summary>
+    public static void AddTask(string task)
+    {
+        var processStartInfo = new ProcessStartInfo
+        {
+            FileName = "/bin/bash",
+            Arguments = $"-c \"echo '{task}' | crontab -e\"",
             UseShellExecute = false
         };
 
