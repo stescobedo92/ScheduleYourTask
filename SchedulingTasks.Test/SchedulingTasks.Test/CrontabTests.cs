@@ -2,14 +2,28 @@
 
 public class CrontabTests
 {
-    [SetUp]
-    public void Setup()
+    [Test]
+    public void GetCrontab_ReturnsNonEmptyString()
     {
+        string crontab = Crontab.GetCrontab();
+        Assert.That(crontab, Is.Not.Empty);
     }
 
     [Test]
-    public void Test1()
+    public void AddTask_AddsTaskToCrontab()
     {
-        Assert.Pass();
+        string task = "* * * * * echo 'Hello, world!'";
+        Crontab.AddTask(task);
+        string crontab = Crontab.GetCrontab();
+        Assert.That(crontab, Contains.Substring(task));
+    }
+
+    [Test]
+    public void EditCrontab_UpdatesCrontab()
+    {
+        string originalCrontab = Crontab.GetCrontab();
+        Crontab.EditCrontab();
+        string editedCrontab = Crontab.GetCrontab();
+        Assert.That(editedCrontab, Is.Not.EqualTo(originalCrontab));
     }
 }

@@ -21,4 +21,7 @@
 </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\SchedulingTasks\SchedulingTasks\SchedulingTasks.csproj" />
+  </ItemGroup>
 </Project>
