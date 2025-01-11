@@ -70,5 +70,38 @@ public static class Crontab
         process.Start();
         process.WaitForExit();
     }
+    
+    public static void RemoveTask(string taskIdentifier)
+    {
+        if (string.IsNullOrWhiteSpace(taskIdentifier))
+            throw new ArgumentException("Task identifier cannot be null or empty", nameof(taskIdentifier));
+
+        var processStartInfo = new ProcessStartInfo
+        {
+            FileName = "/bin/bash",
+            Arguments = $"-c \"crontab -l | grep -v '{taskIdentifier}' | crontab -\"",
+            RedirectStandardError = true,
+            UseShellExecute = false
+        };
+
+        try
+        {
+            using (var process = new Process { StartInfo = processStartInfo })
+            {
+                process.Start();
+                string error = process.StandardError.ReadToEnd();
+                process.WaitForExit();
+
+                if (process.ExitCode != 0)
+                {
+                    throw new InvalidOperationException($"Failed to remove task: {error}");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("An error occurred while removing the task from crontab", ex);
+        }
+    }
 }
 
