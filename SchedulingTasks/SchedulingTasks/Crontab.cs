@@ -220,6 +220,65 @@ namespace SchedulingTasks
                 throw new InvalidOperationException("An error occurred while importing tasks to crontab", ex);
             }
         }
+        
+        public static void TrackCrontabChanges()
+        {
+            try
+            {
+                // Validate if the directory exists, if not create it
+                string historyDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".crontab_history");
+                if (!Directory.Exists(historyDir))
+                {
+                    Directory.CreateDirectory(historyDir);
+                }
+
+                // Validate if the crontab command is available
+                var checkCrontab = new ProcessStartInfo
+                {
+                    FileName = "/bin/bash",
+                    Arguments = "-c \"command -v crontab\"",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false
+                };
+
+                using (var process = new Process { StartInfo = checkCrontab })
+                {
+                    process.Start();
+                    string output = process.StandardOutput.ReadToEnd();
+                    string error = process.StandardError.ReadToEnd();
+                    process.WaitForExit();
+
+                    if (process.ExitCode != 0 || string.IsNullOrWhiteSpace(output))
+                    {
+                        throw new InvalidOperationException($"Crontab command not found: {error}");
+                    }
+                }
+
+                // Execute the crontab backup command
+                var processStartInfo = new ProcessStartInfo
+                {
+                    FileName = "/bin/bash",
+                    Arguments = $"-c \"crontab -l > {historyDir}/$(date +\\%Y\\%m\\%d\\%H\\%M\\%S)_crontab.bak\"",
+                    UseShellExecute = false
+                };
+
+                using (var process = new Process { StartInfo = processStartInfo })
+                {
+                    process.Start();
+                    process.WaitForExit();
+
+                    if (process.ExitCode != 0)
+                    {
+                        throw new InvalidOperationException("An error occurred while backing up the crontab list");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("An error occurred while tracking crontab changes", ex);
+            }
+        }
     }
 }
 
