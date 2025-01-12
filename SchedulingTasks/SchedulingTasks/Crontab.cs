@@ -31,6 +31,10 @@ namespace SchedulingTasks
             }
         }
 
+        /// <summary>
+        /// Edits the crontab using the default editor.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Thrown when an error occurs while editing the crontab.</exception>
         public static void EditCrontab()
         {
             try
@@ -54,6 +58,12 @@ namespace SchedulingTasks
             }
         }
 
+        /// <summary>
+        /// Adds a new task to the crontab.
+        /// </summary>
+        /// <param name="task">The task to be added.</param>
+        /// <exception cref="ArgumentException">Thrown when the task is null or empty.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when an error occurs while adding the task to crontab.</exception>
         public static void AddTask(string task)
         {
             if (string.IsNullOrWhiteSpace(task))
@@ -80,6 +90,12 @@ namespace SchedulingTasks
             }
         }
 
+        /// <summary>
+        /// Removes a task from the crontab based on the task identifier.
+        /// </summary>
+        /// <param name="taskIdentifier">The identifier of the task to be removed.</param>
+        /// <exception cref="ArgumentException">Thrown when the task identifier is null or empty.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when an error occurs while removing the task from crontab.</exception>
         public static void RemoveTask(string taskIdentifier)
         {
             if (string.IsNullOrWhiteSpace(taskIdentifier))
@@ -113,6 +129,13 @@ namespace SchedulingTasks
             }
         }
 
+        /// <summary>
+        /// Enables or disables a task in the crontab based on the task identifier.
+        /// </summary>
+        /// <param name="taskIdentifier">The identifier of the task to be enabled or disabled.</param>
+        /// <param name="enable">True to enable the task, false to disable it.</param>
+        /// <exception cref="ArgumentException">Thrown when the task identifier is null or empty.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when an error occurs while enabling/disabling the task in crontab.</exception>
         public static void EnableDisableTask(string taskIdentifier, bool enable)
         {
             if (string.IsNullOrWhiteSpace(taskIdentifier))
@@ -142,6 +165,11 @@ namespace SchedulingTasks
             }
         }
 
+        /// <summary>
+        /// Lists all tasks in the crontab with their next run details.
+        /// </summary>
+        /// <returns>A string containing the list of tasks with their next run details.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when an error occurs while listing tasks with details from crontab.</exception>
         public static string ListTasksWithDetails()
         {
             try
@@ -169,6 +197,12 @@ namespace SchedulingTasks
             }
         }
 
+        /// <summary>
+        /// Exports the current crontab tasks to a specified file.
+        /// </summary>
+        /// <param name="filePath">The file path where the tasks will be exported.</param>
+        /// <exception cref="ArgumentException">Thrown when the file path is null or empty.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when an error occurs while exporting tasks from crontab.</exception>
         public static void ExportTasks(string filePath)
         {
             if (string.IsNullOrWhiteSpace(filePath))
@@ -195,6 +229,12 @@ namespace SchedulingTasks
             }
         }
 
+        /// <summary>
+        /// Imports crontab tasks from a specified file.
+        /// </summary>
+        /// <param name="filePath">The file path from where the tasks will be imported.</param>
+        /// <exception cref="ArgumentException">Thrown when the file path is null or empty.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when an error occurs while importing tasks to crontab.</exception>
         public static void ImportTasks(string filePath)
         {
             if (string.IsNullOrWhiteSpace(filePath))
@@ -221,6 +261,10 @@ namespace SchedulingTasks
             }
         }
         
+        /// <summary>
+        /// Tracks changes in the crontab by creating a backup of the current crontab list.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Thrown when an error occurs while tracking crontab changes.</exception>
         public static void TrackCrontabChanges()
         {
             try
