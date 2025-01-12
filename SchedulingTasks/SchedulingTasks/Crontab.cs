@@ -2,28 +2,58 @@
 
 namespace SchedulingTasks
 {
+    /// <summary>
+    /// Provides methods to interact with the system crontab for task scheduling.
+    /// </summary>
     public static class Crontab
     {
+        /// <summary>
+        /// Executes a shell command and optionally captures the output and error streams.
+        /// </summary>
+        /// <param name="command">The shell command to execute.</param>
+        /// <param name="redirectOutput">Indicates whether to capture the standard output stream.</param>
+        /// <param name="redirectError">Indicates whether to capture the standard error stream.</param>
+        /// <returns>The standard output of the command if captured; otherwise, an empty string.</returns>
+        /// <exception cref="InvalidOperationException">Thrown if the command execution fails and error capturing is enabled.</exception>
+        private static string ExecuteCommand(string command, bool redirectOutput = true, bool redirectError = false)
+        {
+            var processStartInfo = new ProcessStartInfo
+            {
+                FileName = "/bin/bash",
+                Arguments = $"-c \"{command}\"",
+                RedirectStandardOutput = redirectOutput,
+                RedirectStandardError = redirectError,
+                UseShellExecute = false
+            };
+
+            using (var process = new Process { StartInfo = processStartInfo })
+            {
+                process.Start();
+
+                string result = redirectOutput ? process.StandardOutput.ReadToEnd() : string.Empty;
+                string error = redirectError ? process.StandardError.ReadToEnd() : string.Empty;
+
+                process.WaitForExit();
+
+                if (process.ExitCode != 0 && redirectError)
+                {
+                    throw new InvalidOperationException($"Command failed: {error}");
+                }
+
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Retrieves the current crontab configuration for the user.
+        /// </summary>
+        /// <returns>The crontab entries as a string.</returns>
+        /// <exception cref="InvalidOperationException">Thrown if retrieving the crontab configuration fails.</exception>
         public static string GetCrontab()
         {
             try
             {
-                var processStartInfo = new ProcessStartInfo
-                {
-                    FileName = "/bin/bash",
-                    Arguments = "-c \"crontab -l\"",
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false
-                };
-
-                using (var process = new Process { StartInfo = processStartInfo })
-                {
-                    process.Start();
-                    string result = process.StandardOutput.ReadToEnd();
-                    process.WaitForExit();
-
-                    return result;
-                }
+                return ExecuteCommand("crontab -l");
             }
             catch (Exception ex)
             {
@@ -32,25 +62,14 @@ namespace SchedulingTasks
         }
 
         /// <summary>
-        /// Edits the crontab using the default editor.
+        /// Opens the crontab editor for manual editing.
         /// </summary>
-        /// <exception cref="InvalidOperationException">Thrown when an error occurs while editing the crontab.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if opening the crontab editor fails.</exception>
         public static void EditCrontab()
         {
             try
             {
-                var processStartInfo = new ProcessStartInfo
-                {
-                    FileName = "/bin/bash",
-                    Arguments = "-c \"crontab -e\"",
-                    UseShellExecute = false
-                };
-
-                using (var process = new Process { StartInfo = processStartInfo })
-                {
-                    process.Start();
-                    process.WaitForExit();
-                }
+                ExecuteCommand("crontab -e", redirectOutput: false);
             }
             catch (Exception ex)
             {
@@ -61,9 +80,9 @@ namespace SchedulingTasks
         /// <summary>
         /// Adds a new task to the crontab.
         /// </summary>
-        /// <param name="task">The task to be added.</param>
-        /// <exception cref="ArgumentException">Thrown when the task is null or empty.</exception>
-        /// <exception cref="InvalidOperationException">Thrown when an error occurs while adding the task to crontab.</exception>
+        /// <param name="task">The crontab task entry to add.</param>
+        /// <exception cref="ArgumentException">Thrown if the task is null or empty.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if adding the task fails.</exception>
         public static void AddTask(string task)
         {
             if (string.IsNullOrWhiteSpace(task))
@@ -71,18 +90,7 @@ namespace SchedulingTasks
 
             try
             {
-                var processStartInfo = new ProcessStartInfo
-                {
-                    FileName = "/bin/bash",
-                    Arguments = $"-c \"echo '{task}' | crontab -e\"",
-                    UseShellExecute = false
-                };
-
-                using (var process = new Process { StartInfo = processStartInfo })
-                {
-                    process.Start();
-                    process.WaitForExit();
-                }
+                ExecuteCommand($"echo '{task}' | crontab -e", redirectOutput: false);
             }
             catch (Exception ex)
             {
@@ -91,11 +99,11 @@ namespace SchedulingTasks
         }
 
         /// <summary>
-        /// Removes a task from the crontab based on the task identifier.
+        /// Removes a task from the crontab based on a unique identifier.
         /// </summary>
-        /// <param name="taskIdentifier">The identifier of the task to be removed.</param>
-        /// <exception cref="ArgumentException">Thrown when the task identifier is null or empty.</exception>
-        /// <exception cref="InvalidOperationException">Thrown when an error occurs while removing the task from crontab.</exception>
+        /// <param name="taskIdentifier">The unique identifier of the task to remove.</param>
+        /// <exception cref="ArgumentException">Thrown if the task identifier is null or empty.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if removing the task fails.</exception>
         public static void RemoveTask(string taskIdentifier)
         {
             if (string.IsNullOrWhiteSpace(taskIdentifier))
@@ -103,25 +111,7 @@ namespace SchedulingTasks
 
             try
             {
-                var processStartInfo = new ProcessStartInfo
-                {
-                    FileName = "/bin/bash",
-                    Arguments = $"-c \"crontab -l | grep -v '{taskIdentifier}' | crontab -\"",
-                    RedirectStandardError = true,
-                    UseShellExecute = false
-                };
-
-                using (var process = new Process { StartInfo = processStartInfo })
-                {
-                    process.Start();
-                    string error = process.StandardError.ReadToEnd();
-                    process.WaitForExit();
-
-                    if (process.ExitCode != 0)
-                    {
-                        throw new InvalidOperationException($"Failed to remove task: {error}");
-                    }
-                }
+                ExecuteCommand($"crontab -l | grep -v '{taskIdentifier}' | crontab -", redirectError: true);
             }
             catch (Exception ex)
             {
@@ -130,12 +120,12 @@ namespace SchedulingTasks
         }
 
         /// <summary>
-        /// Enables or disables a task in the crontab based on the task identifier.
+        /// Enables or disables a crontab task by commenting or uncommenting its entry.
         /// </summary>
-        /// <param name="taskIdentifier">The identifier of the task to be enabled or disabled.</param>
+        /// <param name="taskIdentifier">The unique identifier of the task to enable or disable.</param>
         /// <param name="enable">True to enable the task, false to disable it.</param>
-        /// <exception cref="ArgumentException">Thrown when the task identifier is null or empty.</exception>
-        /// <exception cref="InvalidOperationException">Thrown when an error occurs while enabling/disabling the task in crontab.</exception>
+        /// <exception cref="ArgumentException">Thrown if the task identifier is null or empty.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if modifying the task fails.</exception>
         public static void EnableDisableTask(string taskIdentifier, bool enable)
         {
             if (string.IsNullOrWhiteSpace(taskIdentifier))
@@ -143,21 +133,11 @@ namespace SchedulingTasks
 
             try
             {
-                string command = enable ? $"crontab -l | sed '/# {taskIdentifier}/ s/^# //g' | crontab -" :
+                string command = enable ? 
+                    $"crontab -l | sed '/# {taskIdentifier}/ s/^# //g' | crontab -" :
                     $"crontab -l | sed '/{taskIdentifier}/ s/^/# /g' | crontab -";
 
-                var processStartInfo = new ProcessStartInfo
-                {
-                    FileName = "/bin/bash",
-                    Arguments = $"-c \"{command}\"",
-                    UseShellExecute = false
-                };
-
-                using (var process = new Process { StartInfo = processStartInfo })
-                {
-                    process.Start();
-                    process.WaitForExit();
-                }
+                ExecuteCommand(command, redirectOutput: false);
             }
             catch (Exception ex)
             {
@@ -166,30 +146,16 @@ namespace SchedulingTasks
         }
 
         /// <summary>
-        /// Lists all tasks in the crontab with their next run details.
+        /// Lists all tasks in the crontab along with their next execution times.
         /// </summary>
-        /// <returns>A string containing the list of tasks with their next run details.</returns>
-        /// <exception cref="InvalidOperationException">Thrown when an error occurs while listing tasks with details from crontab.</exception>
+        /// <returns>A detailed list of crontab tasks and their next run times.</returns>
+        /// <exception cref="InvalidOperationException">Thrown if listing tasks fails.</exception>
         public static string ListTasksWithDetails()
         {
             try
             {
-                var processStartInfo = new ProcessStartInfo
-                {
-                    FileName = "/bin/bash",
-                    Arguments = "-c \"crontab -l | while read line; do next_run=$(echo $line | awk '{print $1,$2,$3,$4,$5}' | crontab -n); echo $line - Next Run: $next_run; done\"",
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false
-                };
-
-                using (var process = new Process { StartInfo = processStartInfo })
-                {
-                    process.Start();
-                    string result = process.StandardOutput.ReadToEnd();
-                    process.WaitForExit();
-
-                    return result;
-                }
+                string command = "crontab -l | while read line; do next_run=$(echo $line | awk '{print $1,$2,$3,$4,$5}' | crontab -n); echo $line - Next Run: $next_run; done";
+                return ExecuteCommand(command);
             }
             catch (Exception ex)
             {
@@ -198,11 +164,11 @@ namespace SchedulingTasks
         }
 
         /// <summary>
-        /// Exports the current crontab tasks to a specified file.
+        /// Exports the current crontab configuration to a specified file.
         /// </summary>
-        /// <param name="filePath">The file path where the tasks will be exported.</param>
-        /// <exception cref="ArgumentException">Thrown when the file path is null or empty.</exception>
-        /// <exception cref="InvalidOperationException">Thrown when an error occurs while exporting tasks from crontab.</exception>
+        /// <param name="filePath">The file path where the crontab configuration will be saved.</param>
+        /// <exception cref="ArgumentException">Thrown if the file path is null or empty.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if exporting the crontab fails.</exception>
         public static void ExportTasks(string filePath)
         {
             if (string.IsNullOrWhiteSpace(filePath))
@@ -210,18 +176,7 @@ namespace SchedulingTasks
 
             try
             {
-                var processStartInfo = new ProcessStartInfo
-                {
-                    FileName = "/bin/bash",
-                    Arguments = $"-c \"crontab -l > {filePath}\"",
-                    UseShellExecute = false
-                };
-
-                using (var process = new Process { StartInfo = processStartInfo })
-                {
-                    process.Start();
-                    process.WaitForExit();
-                }
+                ExecuteCommand($"crontab -l > {filePath}", redirectOutput: false);
             }
             catch (Exception ex)
             {
@@ -230,11 +185,11 @@ namespace SchedulingTasks
         }
 
         /// <summary>
-        /// Imports crontab tasks from a specified file.
+        /// Imports a crontab configuration from a specified file.
         /// </summary>
-        /// <param name="filePath">The file path from where the tasks will be imported.</param>
-        /// <exception cref="ArgumentException">Thrown when the file path is null or empty.</exception>
-        /// <exception cref="InvalidOperationException">Thrown when an error occurs while importing tasks to crontab.</exception>
+        /// <param name="filePath">The file path containing the crontab configuration to import.</param>
+        /// <exception cref="ArgumentException">Thrown if the file path is null or empty.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if importing the crontab fails.</exception>
         public static void ImportTasks(string filePath)
         {
             if (string.IsNullOrWhiteSpace(filePath))
@@ -242,81 +197,32 @@ namespace SchedulingTasks
 
             try
             {
-                var processStartInfo = new ProcessStartInfo
-                {
-                    FileName = "/bin/bash",
-                    Arguments = $"-c \"crontab {filePath}\"",
-                    UseShellExecute = false
-                };
-
-                using (var process = new Process { StartInfo = processStartInfo })
-                {
-                    process.Start();
-                    process.WaitForExit();
-                }
+                ExecuteCommand($"crontab {filePath}", redirectOutput: false);
             }
             catch (Exception ex)
             {
                 throw new InvalidOperationException("An error occurred while importing tasks to crontab", ex);
             }
         }
-        
+
         /// <summary>
-        /// Tracks changes in the crontab by creating a backup of the current crontab list.
+        /// Tracks changes made to the crontab by creating a timestamped backup of the current configuration.
         /// </summary>
-        /// <exception cref="InvalidOperationException">Thrown when an error occurs while tracking crontab changes.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if tracking changes fails.</exception>
         public static void TrackCrontabChanges()
         {
             try
             {
-                // Validate if the directory exists, if not create it
                 string historyDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".crontab_history");
                 if (!Directory.Exists(historyDir))
                 {
                     Directory.CreateDirectory(historyDir);
                 }
 
-                // Validate if the crontab command is available
-                var checkCrontab = new ProcessStartInfo
-                {
-                    FileName = "/bin/bash",
-                    Arguments = "-c \"command -v crontab\"",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false
-                };
+                ExecuteCommand("command -v crontab", redirectError: true);
 
-                using (var process = new Process { StartInfo = checkCrontab })
-                {
-                    process.Start();
-                    string output = process.StandardOutput.ReadToEnd();
-                    string error = process.StandardError.ReadToEnd();
-                    process.WaitForExit();
-
-                    if (process.ExitCode != 0 || string.IsNullOrWhiteSpace(output))
-                    {
-                        throw new InvalidOperationException($"Crontab command not found: {error}");
-                    }
-                }
-
-                // Execute the crontab backup command
-                var processStartInfo = new ProcessStartInfo
-                {
-                    FileName = "/bin/bash",
-                    Arguments = $"-c \"crontab -l > {historyDir}/$(date +\\%Y\\%m\\%d\\%H\\%M\\%S)_crontab.bak\"",
-                    UseShellExecute = false
-                };
-
-                using (var process = new Process { StartInfo = processStartInfo })
-                {
-                    process.Start();
-                    process.WaitForExit();
-
-                    if (process.ExitCode != 0)
-                    {
-                        throw new InvalidOperationException("An error occurred while backing up the crontab list");
-                    }
-                }
+                string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+                ExecuteCommand($"crontab -l > {historyDir}/{timestamp}_crontab.bak", redirectOutput: false);
             }
             catch (Exception ex)
             {
