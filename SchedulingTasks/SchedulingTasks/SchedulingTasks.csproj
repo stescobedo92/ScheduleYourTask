@@ -12,11 +12,10 @@
     <PackageTags>External, Libraries</PackageTags> 
     <Description>This package will help create, get and edit tasks in your system's crontab.</Description>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <Copyright>Copyright © Sergio Triana Escobedo 2023</Copyright>
+    <Copyright>Copyright © Sergio Triana Escobedo 2025</Copyright>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageIcon>binarycoffee.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>    
     <RepositoryType>https://github.com/stescobedo92/ScheduleYourTask</RepositoryType>
     <PackageReleaseNotes>Added icon, external libraries, and update references</PackageReleaseNotes>
@@ -27,8 +26,8 @@
 
   <ItemGroup>
     <None Include="..\..\binarycoffee.png" Pack="true" PackagePath="\" />
-    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
-    <None Include="..\..\LICENSE.txt" Pack="true" PackagePath="\" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="" />
+    <None Include="LICENSE.txt" Pack="true" PackagePath="" />
   </ItemGroup>
 
 </Project>
