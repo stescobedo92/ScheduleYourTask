@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
 	<LangVersion>latest</LangVersion>
     <PackageId>BinaryCoffee.SchedulingTask</PackageId>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
     <Authors>Sergio Triana Escobedo</Authors>
     <Company>Binary Coffee</Company> 
     <PackageTags>External, Libraries</PackageTags> 
