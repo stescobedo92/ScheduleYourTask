@@ -16,6 +16,8 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageIcon>binarycoffee.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>    
     <RepositoryType>https://github.com/stescobedo92/ScheduleYourTask</RepositoryType>
     <PackageReleaseNotes>Added icon, external libraries, and update references</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/stescobedo92/ScheduleYourTask</RepositoryUrl>
@@ -26,6 +28,7 @@
   <ItemGroup>
     <None Include="..\..\binarycoffee.png" Pack="true" PackagePath="\" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\LICENSE.txt" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>
